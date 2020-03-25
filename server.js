@@ -6,8 +6,14 @@ app.use(cors());
 const http = require('http').createServer(app);
 const io = require('socket.io').listen(http);
 
-const colors = ["black", "blue", "red", "green", "gray", "pink", "purple"];
 const users = [];
+const drawings = [];
+
+const draw = {
+    x: 0,
+    y: 0,
+    color: ""
+}
 
 const user = {
     id: "",
@@ -23,19 +29,18 @@ const user = {
 // });
 
 io.on("connection", (socket) => {
-    // socket.emit("login", {
-    //     id: socket.id
-    // });
+
 
     io.to(socket.id).emit("login", {
-        id: socket.id
+        id: socket.id,
+        drawings: drawings
     })
 
     socket.on("add-user", (data) => {
         var u = Object.create(user);
         u.id = data.id;
         u.name = data.name;
-        u.color = colors[Math.floor(Math.random() * colors.length)];
+        u.color = "red";
         u.x = users.length * 100;
         u.y = data.y;
         u.loaded = true;
@@ -47,9 +52,17 @@ io.on("connection", (socket) => {
     });
 
     socket.on("draw", (data) => {
+        var d = Object.create(draw);
+        d.x = data.x;
+        d.y = data.y;
+        d.color = data.color;
+
+        drawings.push(d);
+
         socket.broadcast.emit("draw", {
             x: data.x,
-            y: data.y
+            y: data.y,
+            color: data.color
         });
         
     })

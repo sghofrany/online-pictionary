@@ -5,9 +5,6 @@ window.addEventListener("load", () => {
     const canvas = document.getElementById("myCanvas");
     const c = canvas.getContext("2d");
 
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
-
     let painting = false;
 
     function startPosition(e) {
@@ -30,40 +27,24 @@ window.addEventListener("load", () => {
 
     function draw(e) {
         if(!painting) return;
-     
-        // c.lineWidth = 5;
-        // c.lineCap = "round";
-
-        // c.lineTo(e.clientX, e.clientY);
-        // c.stroke();
-        // c.beginPath();
-        // c.moveTo(e.clientX, e.clientY);
 
         var pos = mousePos(e);
-
-        c.fillStyle = "red";
+        var color = getColorSelected();
+       
+        c.fillStyle = color;
         c.fillRect(pos.x, pos.y, 10, 10);
 
         socket.emit("draw", {
             x: pos.x,
             y: pos.y,
+            color: color,
             id: socket.id
         })
     }
 
-    function draw_(x, y) {
-        
-        // c.lineWidth = 5;
-        // c.lineCap = "round";
-
-        // c.lineTo(x, y);
-        // c.stroke();
-        // c.beginPath();
-        // c.moveTo(x, y);
-
-        c.fillStyle = "blue";
+    function draw_(x, y, color) {
+        c.fillStyle = color;
         c.fillRect(x, y, 10, 10);
-
     }
 
     canvas.addEventListener("mousedown", startPosition);
@@ -71,7 +52,21 @@ window.addEventListener("load", () => {
     canvas.addEventListener("mousemove", draw);
 
     socket.on("draw", (data) => {
-        draw_(data.x, data.y);
+        draw_(data.x, data.y, data.color);
+    })
+
+    socket.on("login", (data) => {
+        for(var i = 0; i < data.drawings.length; i++) {
+            draw_(data.drawings[i].x, data.drawings[i].y, data.drawings[i].color);
+        }
     })
         
 })
+
+function getColorSelected() {
+    for(var i = 0; i < document.getElementsByName("color").length; i++) {
+        if(document.getElementsByName("color")[i].checked === true) {
+            return document.getElementsByName("color")[i].value;
+        }
+    }
+}
