@@ -1,7 +1,8 @@
 window.addEventListener("load", () => {
 
-    var socket = io.connect("http://63875965.ngrok.io");
-
+    //var socket = io.connect("http://579563fd.ngrok.io");
+    var socket = io.connect();
+    
     const canvas = document.getElementById("myCanvas");
     const c = canvas.getContext("2d");
 

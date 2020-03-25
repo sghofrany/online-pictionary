@@ -24,9 +24,17 @@ const user = {
     loaded: false
 }
 
-// app.get('/', function (req, res) {
-//     res.sendfile(__dirname + '/index.html');
-// });
+app.get('/', function (req, res) {
+    res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/draw.js', function (req, res) {
+    res.sendFile(__dirname + '/draw.js');
+});
+
+app.get('/main.js', function (req, res) {
+    res.sendFile(__dirname + '/main.js');
+});
 
 io.on("connection", (socket) => {
 

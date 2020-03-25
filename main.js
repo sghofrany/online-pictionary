@@ -1,12 +1,12 @@
 window.addEventListener("load", () => {
 
-    var socket = io.connect("http://63875965.ngrok.io");
+    // var socket = io.connect("http://579563fd.ngrok.io");
+    var socket = io.connect();
 
     const user = {
         id: "",
         name: "",
         color: "",
-        x: -1,
         y: -1,
         loaded: false
     }
