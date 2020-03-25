@@ -1,6 +1,6 @@
 window.addEventListener("load", () => {
 
-    var socket = io.connect("http://localhost:4000");
+    var socket = io.connect("http://63875965.ngrok.io");
 
     const user = {
         id: "",
