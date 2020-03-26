@@ -1,8 +1,5 @@
 window.addEventListener("load", () => {
 
-    // var socket = io.connect("http://localhost:4000");
-    // var socket = io.connect();
-    
     const canvas = document.getElementById("myCanvas");
     const c = canvas.getContext("2d");
 
@@ -57,12 +54,15 @@ window.addEventListener("load", () => {
         draw_(data.x, data.y, data.color);
     })
 
-    socket.on("login", (data) => {
+    socket.on("add-user", (data) => {
+        console.log(data);
         for(var i = 0; i < data.drawings.length; i++) {
-            draw_(data.drawings[i].x, data.drawings[i].y, data.drawings[i].color);
+            if(data.drawings[i].room === window.localStorage.getItem("r")) {
+                draw_(data.drawings[i].x, data.drawings[i].y, data.drawings[i].color);
+            }
         }
     })
-        
+    
 })
 
 function getColorSelected() {

@@ -23,8 +23,16 @@ const user = {
     loaded: false
 }
 
+app.get('/create.html', function (req, res) {
+    res.sendFile(__dirname + '/create.html');
+});
+
 app.get('/', function (req, res) {
     res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/init.js', function (req, res) {
+    res.sendFile(__dirname + '/init.js');
 });
 
 app.get('/draw.js', function (req, res) {
@@ -34,6 +42,11 @@ app.get('/draw.js', function (req, res) {
 app.get('/main.js', function (req, res) {
     res.sendFile(__dirname + '/main.js');
 });
+
+app.get('/lobby.js', function (req, res) {
+    res.sendFile(__dirname + '/lobby.js');
+});
+
 
 io.on("connection", (socket) => {
     
@@ -48,24 +61,25 @@ io.on("connection", (socket) => {
     })
 
     io.to(socket.id).emit("login", {
-        id: socket.id,
-        drawings: drawings
+        id: socket.id
     })
 
-    socket.on("add-user", (data) => {
+    socket.on("add-user", (data) => { // this is called when user joins a room
         var u = Object.create(user);
         u.id = data.id;
         u.name = data.name;
         u.room = data.room;
         u.loaded = true;
 
-        // console.log(u.id);
-
         users.push(u);
 
         socket.join(u.room);
 
-        io.to(u.id).emit("add-user", u); //emits data back to the user with that id
+        io.to(u.id).emit("add-user", { //emits data back to the user with that id
+            u: u,
+            drawings: drawings
+        }); 
+       
         io.to(u.room).emit("testing-room", {
             message: `Welcome to ${u.name} to room ${u.room}`
         })
@@ -77,13 +91,13 @@ io.on("connection", (socket) => {
         d.y = data.y;
         d.color = data.color;
 
-        drawings.push(d);
-
         var u = getUserById(socket.id).user;
 
-        console.log(u);
+        d.room = u.room;
 
-        socket.to(u.room).emit("draw", {
+        drawings.push(d);
+
+        socket.to(u.room).emit("draw", {  //emit drawing to certain room
             x: data.x,
             y: data.y,
             color: data.color
@@ -95,8 +109,9 @@ io.on("connection", (socket) => {
 
 
 function getUserById(id) {
+    // console.log(users.length);
     for(var i = 0; i < users.length; i++) {
-        console.log("loop", users[i].id, id);
+        // console.log("loop", users[i].id, id);
         if(users[i].id == id) {
             return {
                 user: users[i],

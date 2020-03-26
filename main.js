@@ -1,8 +1,5 @@
 window.addEventListener("load", () => {
 
-    // var socket = io.connect("http://localhost:4000");
-    // var socket = io.connect();
-
     var query = window.location.search;
     var params = new URLSearchParams(query);
     var room = params.get('r');
@@ -26,20 +23,22 @@ window.addEventListener("load", () => {
         }))
     
     })
+    
+    // socket.on("add-user", (data) => {
+    
+    //     user.id = data.id;
+    //     user.name = data.name;
+    //     user.room = data.room;
+    //     user.loaded = data.loaded;
+        
+    //     console.log("[Data]", user);
 
-    socket.on("testing-room", (data) => {
-        console.log(data);
-    })
+       
+    //     console.log(user.id, user.room);
+    // })
     
     socket.on("add-user", (data) => {
-    
-        user.id = data.id;
-        user.name = data.name;
-        user.room = data.room;
-        user.loaded = data.loaded;
-        
-        console.log(user.id, user.room);
+        document.getElementById("room-id").innerHTML = `Room: ${data.u.room}`;
+        window.localStorage.setItem("r", data.u.room);
     })
-    
-    
 })
