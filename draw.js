@@ -1,7 +1,7 @@
 window.addEventListener("load", () => {
 
-    //var socket = io.connect("http://579563fd.ngrok.io");
-    var socket = io.connect();
+    // var socket = io.connect("http://localhost:4000");
+    // var socket = io.connect();
     
     const canvas = document.getElementById("myCanvas");
     const c = canvas.getContext("2d");
@@ -30,6 +30,7 @@ window.addEventListener("load", () => {
         if(!painting) return;
 
         var pos = mousePos(e);
+       
         var color = getColorSelected();
        
         c.fillStyle = color;

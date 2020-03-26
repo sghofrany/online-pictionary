@@ -1,13 +1,16 @@
 window.addEventListener("load", () => {
 
-    // var socket = io.connect("http://579563fd.ngrok.io");
-    var socket = io.connect();
+    // var socket = io.connect("http://localhost:4000");
+    // var socket = io.connect();
+
+    var query = window.location.search;
+    var params = new URLSearchParams(query);
+    var room = params.get('r');
 
     const user = {
         id: "",
         name: "",
-        color: "",
-        y: -1,
+        room: "",
         loaded: false
     }
     
@@ -18,21 +21,24 @@ window.addEventListener("load", () => {
     
         socket.emit("add-user", ({
             id:id,
-            name: name
+            name: name,
+            room: room
         }))
     
+    })
+
+    socket.on("testing-room", (data) => {
+        console.log(data);
     })
     
     socket.on("add-user", (data) => {
     
         user.id = data.id;
         user.name = data.name;
-        user.color = data.color;
-        user.x = data.x;
-        user.y = 0;
+        user.room = data.room;
         user.loaded = data.loaded;
         
-        console.log(user.loaded, user.id);
+        console.log(user.id, user.room);
     })
     
     
