@@ -53,25 +53,38 @@ app.get('/lobby.js', function (req, res) {
 
 io.on("connection", (socket) => {
     
-    // console.log("-----");
-    // Object.keys(io.sockets.sockets).forEach(function(id) {
-    //     console.log("ID:", id)  // socketId
-    // })
-    
+
     socket.on("disconnect", () => {
-        console.log("[Disconnect]", socket.id);
-        console.log("Games", games.length);
+ 
+        /**
+         * Handling user disconnect
+         */
 
         for(var i = 0; i < games.length; i++) {
-            
+           
+              
+            /**
+             * Remove users from Game on disconnect
+             */
+
             var dUser = games[i].getUser(socket.id);
-  
+
+
            if(typeof dUser !== 'undefined') {
-                console.log("[Before Remove]", games[i].users);
                 games[i].users.splice(dUser.pos, 1);
-                console.log("[After Remove]", games[i].users);
+
+                /**
+                 * if the number of users in a Game is 0, then remove
+                 * the game from the games array.
+                 */
+
+
+                if(games[i].users.length === 0) { 
+                    games.splice(i, 1);
+                }
            } 
        }
+
     })
 
     io.to(socket.id).emit("login", {
@@ -157,4 +170,4 @@ function getGameByRoom(room) {
     }
 }
 
-http.listen(4000, () => console.log("Server running"));
+http.listen(4000, () => console.log("Server running on port", 4000));
