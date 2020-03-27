@@ -4,13 +4,6 @@ window.addEventListener("load", () => {
     var params = new URLSearchParams(query);
     var room = params.get('r');
 
-    const user = {
-        id: "",
-        name: "",
-        room: "",
-        loaded: false
-    }
-    
     socket.on("login", (data) => {
     
         var id = data.id;
@@ -24,21 +17,13 @@ window.addEventListener("load", () => {
     
     })
     
-    // socket.on("add-user", (data) => {
-    
-    //     user.id = data.id;
-    //     user.name = data.name;
-    //     user.room = data.room;
-    //     user.loaded = data.loaded;
-        
-    //     console.log("[Data]", user);
-
-       
-    //     console.log(user.id, user.room);
-    // })
-    
     socket.on("add-user", (data) => {
         document.getElementById("room-id").innerHTML = `Room: ${data.u.room}`;
         window.localStorage.setItem("r", data.u.room);
+    })
+
+    socket.on("room-counter", (data) => {
+        console.log(data);
+        document.getElementById("room-counter").innerHTML = `Counter: ${data.timer}`;
     })
 })

@@ -5,7 +5,10 @@ const app = express();
 app.use(cors());
 const http = require('http').createServer(app);
 const io = require('socket.io').listen(http);
+const {User} = require("./objects/User");
+const {Game} = require("./objects/Game");
 
+const games = [];
 const users = [];
 const drawings = [];
 
@@ -50,14 +53,25 @@ app.get('/lobby.js', function (req, res) {
 
 io.on("connection", (socket) => {
     
-    console.log("-----");
-    Object.keys(io.sockets.sockets).forEach(function(id) {
-        console.log("ID:", id)  // socketId
-    })
+    // console.log("-----");
+    // Object.keys(io.sockets.sockets).forEach(function(id) {
+    //     console.log("ID:", id)  // socketId
+    // })
     
     socket.on("disconnect", () => {
-       console.log(`[Disconnted] ${socket.id}`);
+        console.log("[Disconnect]", socket.id);
+        console.log("Games", games.length);
 
+        for(var i = 0; i < games.length; i++) {
+            
+            var dUser = games[i].getUser(socket.id);
+  
+           if(typeof dUser !== 'undefined') {
+                console.log("[Before Remove]", games[i].users);
+                games[i].users.splice(dUser.pos, 1);
+                console.log("[After Remove]", games[i].users);
+           } 
+       }
     })
 
     io.to(socket.id).emit("login", {
@@ -74,6 +88,18 @@ io.on("connection", (socket) => {
         users.push(u);
 
         socket.join(u.room);
+
+        var roomCount = io.sockets.adapter.rooms[u.room].length;
+
+        var createUser = new User(data.id, data.name, data.room);
+
+        if(roomCount === 1) {
+            var g = new Game(io, createUser.room, 0, 0, 3, "hello", createUser.id);
+            games.push(g);
+            g.startTimer();
+        }
+
+        getGameByRoom(createUser.room).users.push(createUser);
 
         io.to(u.id).emit("add-user", { //emits data back to the user with that id
             u: u,
@@ -117,6 +143,16 @@ function getUserById(id) {
                 user: users[i],
                 position: i
             }
+        }
+    }
+}
+
+function getGameByRoom(room) {
+    for(var i = 0; i < games.length; i++) {
+        var g = games[i];
+
+        if(g.room === room) {
+            return g;
         }
     }
 }
