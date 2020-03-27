@@ -43,7 +43,6 @@ window.addEventListener("load", () => {
     document.getElementById("room-id").innerHTML = `Room: ${room}`;
 
     socket.on("room-counter", (data) => {
-        console.log(data);
         document.getElementById("room-counter").innerHTML = `Counter: ${data.timer}`;
     })
 })

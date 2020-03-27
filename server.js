@@ -8,6 +8,7 @@ const io = require('socket.io').listen(http);
 const {User} = require("./objects/User");
 const {Game} = require("./objects/Game");
 const {Drawing} = require("./objects/Drawing");
+const words = require("./objects/words");
 
 const games = [];
 
@@ -92,17 +93,19 @@ io.on("connection", (socket) => {
          */
 
         if(roomCount === 1) {
-            var g = new Game(io, user.room, 0, 0, 3, "hello", user.id);
+            var g = new Game(io, user.room, 60, 0, 3, words.easyWords());
             games.push(g);
-            g.startTimer();
         }
 
         userMap.set(user.id, user);
 
-        console.log(getUserById(user.id));
-
-        var game = getGameByRoom(user.room)
+        var game = getGameByRoom(user.room);
         game.users.push(user);
+
+        if(game.users.length >= 2) {
+            game.start();
+            console.log(game.toString());
+        }
 
         /**
          * This will be used for messaging in rooms
@@ -112,10 +115,29 @@ io.on("connection", (socket) => {
             drawings: game.drawings
         })
 
+    })
+
+    socket.on("message-room", (data) => {
+
+        var user = userMap.get(socket.id);
+        var game = getGameByRoom(user.room);
+
+        /**
+         * User has guessed, stop them from messaging
+         */
+
+        if(user.guessed) { 
+            return;
+        }
+
+        var checked = game.check(user.id, data.message);
+
         io.to(user.room).emit("message-room", {
-            message: `Welcome to ${user.name} to room ${user.room}`
+            message: checked
         })
     })
+
+  
 
     socket.on("draw", (data) => {
 
