@@ -1,5 +1,3 @@
-const {User} = require("./user");
-
 class Game { 
     constructor(io, room, timer, currentRound, totalRounds, currentWord, drawer) {
         this.io = io;

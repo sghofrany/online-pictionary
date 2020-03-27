@@ -2,6 +2,10 @@ window.addEventListener("load", () => {
 
     // var socket = io.connect("http://localhost:4000");
 
+    /**
+     * Allow users to set their name here and add it to local storage
+     */
+
     var room = makeid(10);
 
     document.write("<a href='./index.html?r=" + room + "'>Click to join</a>");

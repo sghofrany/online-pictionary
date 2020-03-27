@@ -7,24 +7,12 @@ const http = require('http').createServer(app);
 const io = require('socket.io').listen(http);
 const {User} = require("./objects/User");
 const {Game} = require("./objects/Game");
+const {Drawing} = require("./objects/Drawing");
 
 const games = [];
-const users = [];
-const drawings = [];
 
-const draw = {
-    x: 0,
-    y: 0,
-    color: "",
-    room : ""
-}
+const userMap = new Map();
 
-const user = {
-    id: "",
-    name: "",
-    room: "",
-    loaded: false
-}
 
 app.get('/create.html', function (req, res) {
     res.sendFile(__dirname + '/create.html');
@@ -78,7 +66,6 @@ io.on("connection", (socket) => {
                  * the game from the games array.
                  */
 
-
                 if(games[i].users.length === 0) { 
                     games.splice(i, 1);
                 }
@@ -91,52 +78,64 @@ io.on("connection", (socket) => {
         id: socket.id
     })
 
-    socket.on("add-user", (data) => { // this is called when user joins a room
-        var u = Object.create(user);
-        u.id = data.id;
-        u.name = data.name;
-        u.room = data.room;
-        u.loaded = true;
+    socket.on("add-user", (data) => {
 
-        users.push(u);
+        var user = new User(data.id, data.name, data.room);
 
-        socket.join(u.room);
+        socket.join(user.room);
 
-        var roomCount = io.sockets.adapter.rooms[u.room].length;
-
-        var createUser = new User(data.id, data.name, data.room);
+        var roomCount = io.sockets.adapter.rooms[user.room].length;
+       
+        /**
+         * If the number of people in the room is one when someone joins a new Game needs to be created.
+         * This is because socket.io will create a room for you if it doesn't exist already.
+         */
 
         if(roomCount === 1) {
-            var g = new Game(io, createUser.room, 0, 0, 3, "hello", createUser.id);
+            var g = new Game(io, user.room, 0, 0, 3, "hello", user.id);
             games.push(g);
             g.startTimer();
         }
 
-        getGameByRoom(createUser.room).users.push(createUser);
+        userMap.set(user.id, user);
 
-        io.to(u.id).emit("add-user", { //emits data back to the user with that id
-            u: u,
-            drawings: drawings
-        }); 
-       
-        io.to(u.room).emit("testing-room", {
-            message: `Welcome to ${u.name} to room ${u.room}`
+        console.log(getUserById(user.id));
+
+        var game = getGameByRoom(user.room)
+        game.users.push(user);
+
+        /**
+         * This will be used for messaging in rooms
+         */
+
+        io.to(user.id).emit("draw-current", {
+            drawings: game.drawings
         })
-    });
+
+        io.to(user.room).emit("message-room", {
+            message: `Welcome to ${user.name} to room ${user.room}`
+        })
+    })
 
     socket.on("draw", (data) => {
-        var d = Object.create(draw);
-        d.x = data.x;
-        d.y = data.y;
-        d.color = data.color;
 
-        var u = getUserById(socket.id).user;
+        var room = getUserById(data.id).room;
 
-        d.room = u.room;
+        if(typeof room === "undefined") return;
 
-        drawings.push(d);
+        var drawing = new Drawing(data.x, data.y, data.color, room);
+        
+        var game = getGameByRoom(room);
 
-        socket.to(u.room).emit("draw", {  //emit drawing to certain room
+        if(typeof game === "undefined") return;
+
+        game.drawings.push(drawing);
+
+        /**
+         * Send the "draw" information only to the room that it's supposed to go to
+         */
+
+        socket.to(room).emit("draw", { 
             x: data.x,
             y: data.y,
             color: data.color
@@ -148,16 +147,7 @@ io.on("connection", (socket) => {
 
 
 function getUserById(id) {
-    // console.log(users.length);
-    for(var i = 0; i < users.length; i++) {
-        // console.log("loop", users[i].id, id);
-        if(users[i].id == id) {
-            return {
-                user: users[i],
-                position: i
-            }
-        }
-    }
+    return userMap.get(id);
 }
 
 function getGameByRoom(room) {

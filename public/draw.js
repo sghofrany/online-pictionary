@@ -1,3 +1,7 @@
+/**
+ * This class handles the drawing aspect of online-pictionary
+ */
+
 window.addEventListener("load", () => {
 
     const canvas = document.getElementById("myCanvas");
@@ -33,11 +37,16 @@ window.addEventListener("load", () => {
         c.fillStyle = color;
         c.fillRect(pos.x, pos.y, 10, 10);
 
+        /**
+         * "draw" is sending the x, y, socket.id, and color to the server which is then 
+         * stored in the Game object for later retrieval if needed.
+         */
+
         socket.emit("draw", {
+            id: socket.id,
             x: pos.x,
             y: pos.y,
-            color: color,
-            id: socket.id
+            color: color
         })
     }
 
@@ -54,8 +63,11 @@ window.addEventListener("load", () => {
         draw_(data.x, data.y, data.color);
     })
 
-    socket.on("add-user", (data) => {
-        console.log(data);
+    /**
+     * "draw-current" draws what has already been drawn on the canvas.
+     */
+
+    socket.on("draw-current", (data) => {
         for(var i = 0; i < data.drawings.length; i++) {
             if(data.drawings[i].room === window.localStorage.getItem("r")) {
                 draw_(data.drawings[i].x, data.drawings[i].y, data.drawings[i].color);
