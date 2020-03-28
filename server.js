@@ -121,6 +121,8 @@ io.on("connection", (socket) => {
             }
         }
 
+        console.log("GAME", game.ending);
+
         /**
          * This will be used for messaging in rooms
          */

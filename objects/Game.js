@@ -1,4 +1,5 @@
 class Game { 
+
     constructor(io, room, timer, currentRound, totalRounds, wordArray) {
         this.io = io;
         this.room = room;
@@ -11,6 +12,7 @@ class Game {
         this.allWords = wordArray;
         this.users = [];
         this.drawings = [];
+        this.ending = false;
     }
 
     getUser(id) {
@@ -36,8 +38,13 @@ class Game {
             if(this.timer <= 0) {
                
                 if(this.currentRound >= this.totalRounds) {
+                    
                     clearInterval(t);
-                    this.end();
+                    
+                    if(!this.ending) {
+                        this.end();
+                    }
+                  
                     return;
                 }
                 
@@ -52,8 +59,13 @@ class Game {
              */
 
             if(this.users.length <= 1) {
+                
                 clearInterval(t);
-                this.end();
+                
+                if(!this.ending) {
+                    this.end();
+                }
+
                 return;
             }
 
@@ -72,6 +84,7 @@ class Game {
          */
         this.timer = 30;
         this.drawer = this.users[0];
+        this.ending = false;
 
         /**
          * Since we set the currentRound to 0 when we start the game, we need
@@ -115,8 +128,12 @@ class Game {
          */
 
         if(this.users.length <= 1) {
-            this.end();
-            return;
+            
+            if(!this.ending) {
+                this.end();
+                return;
+            }
+          
         }
 
 
@@ -212,8 +229,10 @@ class Game {
 
     end() {
 
+        this.ending = true;
+
         if(this.users.length == 0) {
-            console.log("[SERVER] Game has ended, not enough players.");
+            console.log("[SERVER] Game has ended, not enough players (1).");
             return;
         }
 
@@ -225,7 +244,14 @@ class Game {
             
             this.timer--;
             
+            if(this.users.length <= 0) {
+                console.log("[SERVER] Game has ended, not enought players (2).")
+                clearInterval(t);
+                return;
+            }
+
             if(this.timer === 0) {
+                
                 clearInterval(t);
 
                 if(this.users.length === 1) {
