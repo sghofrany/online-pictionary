@@ -14,7 +14,6 @@ const games = [];
 
 const userMap = new Map();
 
-
 app.get('/create.html', function (req, res) {
     res.sendFile(__dirname + '/create.html');
 });
@@ -41,7 +40,6 @@ app.get('/lobby.js', function (req, res) {
 
 
 io.on("connection", (socket) => {
-    
 
     socket.on("disconnect", () => {
  
@@ -56,20 +54,32 @@ io.on("connection", (socket) => {
              * Remove users from Game on disconnect
              */
 
-            var dUser = games[i].getUser(socket.id);
+            var game = games[i];
+
+            var user = game.getUser(socket.id);
 
 
-           if(typeof dUser !== 'undefined') {
-                games[i].users.splice(dUser.pos, 1);
+           if(typeof user !== 'undefined') {
+            game.users.splice(user.pos, 1);
 
                 /**
                  * if the number of users in a Game is 0, then remove
                  * the game from the games array.
                  */
 
-                if(games[i].users.length === 0) { 
+                if(game.users.length === 0) { 
                     games.splice(i, 1);
+                    return;
                 }
+
+                if(game.users.length >= 2) {
+                    game.endRound();
+                }
+                
+                if(game.users.length === 1) {
+                    game.end();
+                }
+
            } 
        }
 
@@ -93,7 +103,7 @@ io.on("connection", (socket) => {
          */
 
         if(roomCount === 1) {
-            var g = new Game(io, user.room, 60, 0, 3, words.easyWords());
+            var g = new Game(io, user.room, -1, 0, 3, words.easyWords());
             games.push(g);
         }
 
@@ -103,8 +113,12 @@ io.on("connection", (socket) => {
         game.users.push(user);
 
         if(game.users.length >= 2) {
-            game.start();
-            console.log(game.toString());
+            if(game.timer === -1) {
+                game.start();
+                console.log("[SERVER] Game has been started.");
+                console.log(`[SERVER] DRAWER:${game.drawer.id}, WORD:${game.currentWord}, ROUND:${game.currentRound}/${game.totalRounds}`);
+                return;
+            }
         }
 
         /**
@@ -137,8 +151,6 @@ io.on("connection", (socket) => {
         })
     })
 
-  
-
     socket.on("draw", (data) => {
 
         var room = getUserById(data.id).room;
@@ -150,6 +162,12 @@ io.on("connection", (socket) => {
         var game = getGameByRoom(room);
 
         if(typeof game === "undefined") return;
+
+        /**
+         * Only draw when its your turn
+         */
+
+        if(game.drawer.id !== socket.id) return;
 
         game.drawings.push(drawing);
 

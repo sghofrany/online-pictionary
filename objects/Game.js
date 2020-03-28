@@ -8,6 +8,7 @@ class Game {
         this.currentWord = "";
         this.drawer = undefined;
         this.wordArray = wordArray;
+        this.allWords = wordArray;
         this.users = [];
         this.drawings = [];
     }
@@ -32,23 +33,35 @@ class Game {
              * Time has run out, start a new round.
              */
             
-            if(this.timer === 0) {
-                clearInterval(t);
+            if(this.timer <= 0) {
+               
+                if(this.currentRound >= this.totalRounds) {
+                    clearInterval(t);
+                    this.end();
+                    return;
+                }
+                
+                console.log("[Server] The time ran out, starting next round.");
+                
                 this.nextRound();
+                return;
             }
 
             /**
              * No more users in the room, end the game and stop the timer.
              */
 
-            if(this.users.length === 0) {
+            if(this.users.length <= 1) {
                 clearInterval(t);
                 this.end();
+                return;
             }
 
             this.io.to(this.room).emit("room-counter", {
                 timer: this.timer
             });
+
+            console.log(this.timer);
         }, 1000);
 
     }
@@ -57,6 +70,7 @@ class Game {
         /**
          * Set the first drawer as the first person who joined
          */
+        this.timer = 30;
         this.drawer = this.users[0];
 
         /**
@@ -64,13 +78,15 @@ class Game {
          * to increment the currentRound by 1.
          */
 
+        this.currentRound = 0;
         this.currentRound++; 
         
         /**
          * Choose a random word from our array and then remove it so that later 
          * on we don't choose the same word twice.
          */
-
+        
+         this.wordArray = this.allWords;
         var wordPos = Math.floor(Math.random() * this.wordArray.length);
 
         this.currentWord = this.wordArray[wordPos];
@@ -81,24 +97,64 @@ class Game {
 
     nextRound() {
 
+        this.timer = 30;
         this.currentRound++;
         this.drawings = [];
 
-        if(this.currentRound > this.totalRounds) {
-            this.end();
+        /**
+         * Set every users "guessed" back to false for the new round.
+         */
+
+        for(var i = 0; i < this.users.length; i++) {
+            this.users[i].guessed = false;
         }
+
+
+        /**
+         * End the game if not enough people are in the new round.
+         */
+
+        if(this.users.length <= 1) {
+            this.end();
+            return;
+        }
+
+
+        /**
+         * If at the end of the users array, set the new user to the begining
+         * else just select the next person.
+         */
+
+        var currDrawer = this.getUser(this.drawer.id);
+        var newDrawer;
+
+        if(currDrawer.pos === (this.users.length - 1)) {
+            newDrawer = this.users[0];
+        } else {
+            newDrawer = this.users[currDrawer.pos + 1];
+        }
+
+        this.drawer = newDrawer;
+
+        console.log(`[SERVER] Old:${currDrawer.user.id} New:${newDrawer.id}`);
+
+        /**
+         * Pick new word
+         */
 
         var wordPos = Math.floor(Math.random() * this.wordArray.length);
 
         this.currentWord = this.wordArray[wordPos];
         this.wordArray.splice(wordPos, 1);
-
-        this.startTimer();
+        
+        console.log(`[SERVER] Round ${this.currentRound} of ${this.totalRounds} has started WORD:${this.currentWord}`);
 
     }
 
     check(id, word) {
+        
         var user = this.getUser(id).user;
+        
         /**
          * User doesn't exist
          */
@@ -124,24 +180,70 @@ class Game {
 
         if(word.toLowerCase() === this.currentWord.toLowerCase()) {
             user.guessed = true;
-            console.log(user.id, user.guessed);
+            
+            if(this.endRound()) {
+              
+                this.timer = 0;
+
+                return true;
+            }
+
             return true;
         }
 
-        console.log(user.id, user.guessed);
         return false;
+    }
+
+    endRound() {
+
+        for(var i = 0; i < this.users.length; i++) {
+
+            /**
+             * if user[i]. guessed == false and user[i] is not the drawer return false
+             */
+
+            if(!this.users[i].guessed && this.users[i].id !== this.drawer.id) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     end() {
 
-    }
+        if(this.users.length == 0) {
+            console.log("[SERVER] Game has ended, not enough players.");
+            return;
+        }
 
-    toString() {
-        console.log(`[${this.currentRound}/${this.totalRounds}] Current word is ${this.currentWord}, Drawer is ${this.drawer.id}, Room is ${this.room}`);
+        this.timer = 30;
+
+        console.log("[SERVER] Game has ended, starting an new game in 30 seconds.");
+
+        var t = setInterval(() => {
+            
+            this.timer--;
+            
+            if(this.timer === 0) {
+                clearInterval(t);
+
+                if(this.users.length === 1) {
+                    console.log("[SERVER] Not enough players to start a game, restarting timer.");
+                    this.timer = 30;
+                    return;
+                }
+
+                this.start();
+                return;
+            }
+
+        }, 1000);
+
+
     }
 
 }
-
 
 module.exports = {
     Game

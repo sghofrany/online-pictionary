@@ -6,8 +6,21 @@
 </head>
 <body>
     <script src="./lobby.js"></script>
+    
     <div>
+        <input type="text" id="name-input" name="name" value="Test">
         <label id="lobby-url"><a href=></a></label>
     </div>
+
+    <script>
+        document.getElementById("name-input").addEventListener('keypress', function(event) {
+            if (event.keyCode == 13) {
+                event.preventDefault();
+                
+                window.localStorage.setItem("name", document.getElementById("name-input").value);
+            }
+        });
+    </script>
+
 </body>
 </html>
