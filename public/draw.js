@@ -6,6 +6,9 @@ window.addEventListener("load", () => {
 
     const canvas = document.getElementById("myCanvas");
     const c = canvas.getContext("2d");
+    
+    c.canvas.width  = window.innerWidth;
+    c.canvas.height = window.innerHeight;
 
     let painting = false;
 

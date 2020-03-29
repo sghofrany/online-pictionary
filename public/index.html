@@ -1,16 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>SocketIO Game</title>
+    <title>Live Pictionary</title>
+    <link rel="stylesheet" href="../css/style.css">
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 </head>
 <body>
+
+    <div class="wrapper">
+        
+        <div class="top-wrapper">
+            <div class="rounds-wrapper">
+                <p id="rounds">Round: 1/3</p>
+            </div>
     
-    <p id="room-id"></p>
-    <p id="room-counter"></p>
-    <canvas id="myCanvas" width="600px" height="600px" style="border: 1px solid black"></canvas>
-    <input type="text" id="chat-input" name="message">
+            <div class="room-wrapper">
+                <p id="room-counter">Time: 50</p>
+            </div>
     
+            <div class="characters-wrapper">
+                <p id="characters">a _ _ b _ _ c</p>
+            </div>
+        </div>
+    
+        <div class="middle-wrapper">
+            <div class="players-wrapper">
+                <div class="player" id="socket.id">
+                    <p id="player-name">Anon1</p>
+                    <p id="player-score">122</p>
+                </div>
+                <div class="player" id="socket.id">
+                    <p id="player-name">Anon2</p>
+                    <p id="player-score">321</p>
+                </div>
+                <div class="player" id="socket.id">
+                    <p id="player-name">Anon3</p>
+                    <p id="player-score">442</p>
+                </div>
+            </div>
+            <div class="canvas-wrapper">
+                <canvas id="myCanvas" width="800px" height="600px" style="border: 1px solid black"></canvas>
+            </div>
+            <div class="message-wrapper">
+                <input type="text" id="chat-input" name="message">
+            </div>
+            
+        </div>
+    
+        <div class="bottom-wrapper">
+            <p id="room-id"></p>
+        </div>
+
+    </div>
+    
+    
+
+    
+    
+    
+    
+
+
+
+
+
+
     <script src="./init.js"></script>
     <script src="./main.js"></script>
     <script src="./draw.js"></script>

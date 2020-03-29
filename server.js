@@ -175,7 +175,7 @@ io.on("connection", (socket) => {
          * Only draw when its your turn
          */
 
-        if(game.drawer.id !== socket.id) return;
+        if(typeof game.drawer !== "undefined" && game.drawer.id !== socket.id) return;
 
         game.drawings.push(drawing);
 

@@ -1,0 +1,92 @@
+@import url('https://fonts.googleapis.com/css?family=Comic+Neue&display=swap');
+
+* {
+    font-family: 'Comic Neue', cursive;
+    font-weight: bold;
+}
+
+.wrapper {
+    margin-left: 20%;
+    margin-right: 20%;
+    margin-top: 2%;
+    margin-bottom: 2%;
+}
+
+
+
+/* --------- */
+/* Top Row */
+/* --------- */
+
+.top-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Rounds */
+
+.rounds-wrapper {
+    width: 15%;
+}
+
+/* Room Counter */
+
+.room-wrapper {
+    width: 15%;
+}
+
+/* Characters */
+
+.characters-wrapper {
+    width: 70%;
+}
+
+/* --------- */
+/* Middle Row */
+/* --------- */
+
+.middle-wrapper {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Players */
+
+.players-wrapper {
+    display: block;
+    border: 1px solid black;
+    box-sizing: border-box;   
+    width: 10%;
+    text-align: center;
+}
+
+.player {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+#player-name {
+    margin: 0;
+}
+
+#player-score {
+    margin: 0;
+}
+
+/* Canvas */
+
+.canvas-wrapper {
+    width: 75%;
+}
+
+canvas {
+    /* height: 100%;
+    width: 100%; */
+    box-sizing: border-box;   
+}
+
+/* Message */
+
+.message-wrapper {
+    width: 15%;
+}
