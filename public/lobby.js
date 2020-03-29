@@ -8,8 +8,10 @@ window.addEventListener("load", () => {
 
     var room = makeid(10);
 
-    document.write("<a href='./index.html?r=" + room + "'>Click to join</a>");
+    window.localStorage.setItem("name", "Anonymous");
 
+    document.getElementById("lobby-url").href = "./index.html?r=" + room;
+    document.getElementById("lobby-url").innerHTML = "Click here to join a new lobby!";
 });
 
 function makeid(length) {

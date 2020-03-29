@@ -93,6 +93,12 @@ io.on("connection", (socket) => {
 
         var user = new User(data.id, data.name, data.room);
 
+        if(user.name.length > 12) {
+            user.name = user.name.substring(0, 12);
+        }
+
+        console.log(user);
+
         socket.join(user.room);
 
         var roomCount = io.sockets.adapter.rooms[user.room].length;

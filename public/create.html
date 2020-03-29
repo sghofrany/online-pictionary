@@ -8,18 +8,24 @@
     <script src="./lobby.js"></script>
     
     <div>
-        <input type="text" id="name-input" name="name" value="Test">
-        <label id="lobby-url"><a href=></a></label>
+        <input type="text" id="name-input" name="name" placeholder="Name" onchange="changeHandler()">
+        <label><a id="lobby-url"></a></label>
     </div>
 
     <script>
-        document.getElementById("name-input").addEventListener('keypress', function(event) {
-            if (event.keyCode == 13) {
-                event.preventDefault();
+
+        function changeHandler() {
+            var input = document.getElementById("name-input");
+            window.localStorage.setItem("name", input.value);
+        }
+
+        // document.getElementById("name-input").addEventListener('keypress', function(event) {
+        //     if (event.keyCode == 13) {
+        //         event.preventDefault();
                 
-                window.localStorage.setItem("name", document.getElementById("name-input").value);
-            }
-        });
+        //         window.localStorage.setItem("name", document.getElementById("name-input").value);
+        //     }
+        // });
     </script>
 
 </body>
