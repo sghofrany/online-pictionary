@@ -1,21 +1,7 @@
 Server:
     - Game:
-        * Start handling game logic
-            - Start
-                * Pick Drawer
-                * Give the option of 3 words to the drawer to pick from
-                    - Start timer when word is chosen
-                * Prevent others from drawing
-            - Correct Guess
-                * Check if word they guessed is Correct
-                * Give them the score they got 
-                * After everyone guesses right, end game and go to next person
-
-
-    - Clean Up:
-        * There is probably lots of code that isn't being used or is repetitive and can be replaced with newer code.
-            - replace the "users" constant with our new Object
-            - find a better way to handle "add-user" so that we don't have to use the "login" event.
+        * There are bugs with people leaving and joining back, shouldn't be hard to fix
+          but might be hard to understand what is going on. 
 
 Client:
     - Start the actual design once finished with the backend.

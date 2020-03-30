@@ -110,6 +110,8 @@ class Game {
 
     nextRound() {
 
+        if(!this.endRound()) return;
+
         this.timer = 30;
         this.currentRound++;
         this.drawings = [];

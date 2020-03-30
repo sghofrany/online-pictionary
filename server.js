@@ -60,7 +60,8 @@ io.on("connection", (socket) => {
 
 
            if(typeof user !== 'undefined') {
-            game.users.splice(user.pos, 1);
+                
+                game.users.splice(user.pos, 1);
 
                 /**
                  * if the number of users in a Game is 0, then remove
@@ -74,10 +75,12 @@ io.on("connection", (socket) => {
 
                 if(game.users.length >= 2) {
                     game.endRound();
+                    return;
                 }
                 
                 if(game.users.length === 1) {
-                    game.end();
+                    game.timer = 0;
+                    return;
                 }
 
            } 
@@ -97,7 +100,7 @@ io.on("connection", (socket) => {
             user.name = user.name.substring(0, 12);
         }
 
-        console.log(user);
+        console.log(`[Connect] ${user.name}|${user.id} joined.`);
 
         socket.join(user.room);
 
