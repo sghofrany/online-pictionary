@@ -9,7 +9,12 @@
     
     <div>
         <input type="text" id="name-input" name="name" placeholder="Name" onchange="changeHandler()">
-        <label><a id="lobby-url"></a></label>
+        <input type="text" id="lobby-input" name="name" placeholder="Room ID">
+        <button id="join-lobby">Join</button>
+        <div>
+            <label><a id="lobby-url"></a></label>
+        </div>
+        
     </div>
 
     <script>
@@ -18,14 +23,6 @@
             var input = document.getElementById("name-input");
             window.localStorage.setItem("name", input.value);
         }
-
-        // document.getElementById("name-input").addEventListener('keypress', function(event) {
-        //     if (event.keyCode == 13) {
-        //         event.preventDefault();
-                
-        //         window.localStorage.setItem("name", document.getElementById("name-input").value);
-        //     }
-        // });
     </script>
 
 </body>

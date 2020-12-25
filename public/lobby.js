@@ -11,7 +11,10 @@ window.addEventListener("load", () => {
     window.localStorage.setItem("name", "Anonymous");
 
     document.getElementById("lobby-url").href = "./index.html?r=" + room;
-    document.getElementById("lobby-url").innerHTML = "Click here to join a new lobby!";
+    document.getElementById("lobby-url").innerHTML = "Click here to create a new lobby!";
+    document.getElementById("join-lobby").onclick = () => {
+        window.location.href = "./index.html?r=" + document.getElementById("lobby-input").value;
+    }
 });
 
 function makeid(length) {

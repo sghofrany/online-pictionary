@@ -50,9 +50,25 @@ class Game {
                 
                 console.log("[Server] The time ran out, starting next round.");
                 
+                clearInterval(t);
+                
                 this.nextRound();
                 return;
             }
+
+            /**
+             * Everyone guessed the word
+             */
+
+            if(this.endRound()) {
+                console.log("[Server] Everyone guessed the word, ending round.");
+                
+                clearInterval(t);
+                
+                this.nextRound();
+                return;
+            }
+
 
             /**
              * No more users in the room, end the game and stop the timer.
@@ -82,7 +98,7 @@ class Game {
         /**
          * Set the first drawer as the first person who joined
          */
-        this.timer = 30;
+        this.timer = 10;
         this.drawer = this.users[0];
         this.ending = false;
 
@@ -92,14 +108,14 @@ class Game {
          */
 
         this.currentRound = 0;
-        this.currentRound++; 
+        this.currentRound = this.currentRound + 1; 
         
         /**
          * Choose a random word from our array and then remove it so that later 
          * on we don't choose the same word twice.
          */
         
-         this.wordArray = this.allWords;
+        this.wordArray = this.allWords;
         var wordPos = Math.floor(Math.random() * this.wordArray.length);
 
         this.currentWord = this.wordArray[wordPos];
@@ -110,9 +126,7 @@ class Game {
 
     nextRound() {
 
-        if(!this.endRound()) return;
-
-        this.timer = 30;
+        this.timer = 10;
         this.currentRound++;
         this.drawings = [];
 
@@ -167,7 +181,7 @@ class Game {
         this.wordArray.splice(wordPos, 1);
         
         console.log(`[SERVER] Round ${this.currentRound} of ${this.totalRounds} has started WORD:${this.currentWord}`);
-
+        this.startTimer();
     }
 
     check(id, word) {
