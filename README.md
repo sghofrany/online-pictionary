@@ -1,4 +1,4 @@
-# online-pictionary
+# online-pictionary (Abandoned) 
 I created this project to allow people to play pictionary online in most
 modern browsers. The inspiration behind this project is the website https://skribbl.io/.
 
